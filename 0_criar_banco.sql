@@ -1,0 +1,6 @@
+-- =====================================================================
+-- Fase 0 - Banco e tabelas (PostgreSQL)
+-- Execucao: psql -U postgres -f 0_criar_banco.sql
+-- Se o database ja existir, o CREATE DATABASE falha de forma inofensiva
+-- e o script segue recriando as tabelas.
+-- =====================================================================
