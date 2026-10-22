@@ -41,6 +41,7 @@ def executar(comando, params=None, conn=None):
     try:
         with conn.cursor() as cur:
             cur.execute(comando, params)
+            linhas = cur.rowcount
         if propria:
             conn.commit()
         return linhas
