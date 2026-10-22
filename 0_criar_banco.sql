@@ -78,3 +78,20 @@ CREATE TABLE raw_passagem (
     hora_emissao          VARCHAR(4000)
 );
 
+CREATE TABLE raw_trecho (
+    id_viagem         VARCHAR(4000),
+    num_proposta      VARCHAR(4000),
+    sequencia_trecho  VARCHAR(4000),
+    origem_data       VARCHAR(4000),
+    origem_pais       VARCHAR(4000),
+    origem_uf         VARCHAR(4000),
+    origem_cidade     VARCHAR(4000),
+    destino_data      VARCHAR(4000),
+    destino_pais      VARCHAR(4000),
+    destino_uf        VARCHAR(4000),
+    destino_cidade    VARCHAR(4000),
+    meio_transporte   VARCHAR(4000),
+    numero_diarias    VARCHAR(4000),
+    missao            VARCHAR(4000)
+);
+
