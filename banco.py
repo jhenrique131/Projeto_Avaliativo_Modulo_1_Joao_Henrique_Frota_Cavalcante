@@ -4,12 +4,31 @@ import psycopg2
 from psycopg2 import sql
 
 from psycopg2.extras import execute_values
-import config
+import os
+from dotenv import load_dotenv
 
-def conectar():
-    """Abre conexão com o PostgreSQL."""
-    return psycopg2.connect(**config.DB_CONFIG)
+#def conectar():
+   # """Abre conexão com o PostgreSQL."""
+   # return psycopg2.connect(**config.DB_CONFIG)
+def get_engine():
+    """
+    Retorna engine do PostgreSQL.
+    Engine SQL Alchemy é uma ferramenta de ORM (Object Relational Mapper)
+      que permite mapear classes Python para tabelas do banco de dados 
+      e realizar operações de forma mais intuitiva.
+    """
+    from sqlalchemy import create_engine
+    from sqlalchemy.engine import URL
 
+    #cfg = config.DB_CONFIG
+    conexao = psycopg2.connect(
+        username=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        database=os.getenv("DB_NAME"),
+    )
+    
 
     
 
