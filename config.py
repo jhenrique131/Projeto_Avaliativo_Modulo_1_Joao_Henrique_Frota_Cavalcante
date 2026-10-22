@@ -22,3 +22,11 @@ DB_CONFIG = {
     "port": os.getenv("DB_PORT", "5432"),
     "database": os.getenv("DB_NAME", "viagens_servico"),
 }
+
+#tabela Raw - Arquivo CSV original, sem tratamento
+ARQUIVOS_RAW = {
+    "raw_viagens": "viagens_2025.csv",
+    "raw_pagamentos": "pagamentos_2025.csv",
+    "raw_passagem": "passagem_2025.csv",
+    "raw_trecho": "trecho_2025.csv",
+}
