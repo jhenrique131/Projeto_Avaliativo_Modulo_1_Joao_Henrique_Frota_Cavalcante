@@ -150,3 +150,21 @@ CREATE TABLE silver_pagamento (
     CONSTRAINT ck_pagamento_valor CHECK (valor >= 0)           -- extra 2
 );
 
+CREATE TABLE silver_trecho (
+    id_trecho         INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_viagem         VARCHAR(20) NOT NULL
+                      REFERENCES silver_viagem (id_viagem),
+    sequencia_trecho  INT,
+    origem_data       DATE,
+    origem_uf         VARCHAR(40),
+    origem_cidade     VARCHAR(80),
+    destino_data      DATE,
+    destino_uf        VARCHAR(40),
+    destino_cidade    VARCHAR(80),
+    meio_transporte   VARCHAR(50),
+    numero_diarias    DECIMAL(10,2),
+    CONSTRAINT ck_trecho_diarias CHECK (numero_diarias >= 0),  -- extra 1
+    CONSTRAINT uq_trecho_viagem_seq
+        UNIQUE (id_viagem, sequencia_trecho)                   -- extra 2
+);
+
