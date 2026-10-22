@@ -56,3 +56,25 @@ CREATE TABLE raw_pagamento (
     valor                VARCHAR(4000)
 );
 
+CREATE TABLE raw_passagem (
+    id_viagem             VARCHAR(4000),
+    num_proposta          VARCHAR(4000),
+    meio_transporte       VARCHAR(4000),
+    pais_origem_ida       VARCHAR(4000),
+    uf_origem_ida         VARCHAR(4000),
+    cidade_origem_ida     VARCHAR(4000),
+    pais_destino_ida      VARCHAR(4000),
+    uf_destino_ida        VARCHAR(4000),
+    cidade_destino_ida    VARCHAR(4000),
+    pais_origem_volta     VARCHAR(4000),
+    uf_origem_volta       VARCHAR(4000),
+    cidade_origem_volta   VARCHAR(4000),
+    pais_destino_volta    VARCHAR(4000),
+    uf_destino_volta      VARCHAR(4000),
+    cidade_destino_volta  VARCHAR(4000),
+    valor_passagem        VARCHAR(4000),
+    taxa_servico          VARCHAR(4000),
+    data_emissao          VARCHAR(4000),
+    hora_emissao          VARCHAR(4000)
+);
+
