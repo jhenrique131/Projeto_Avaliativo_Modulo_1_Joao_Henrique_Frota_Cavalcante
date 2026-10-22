@@ -138,3 +138,15 @@ CREATE TABLE silver_passagem (
     CONSTRAINT ck_passagem_taxa  CHECK (taxa_servico >= 0)     -- extra 2
 );
 
+CREATE TABLE silver_pagamento (
+    id_pagamento        INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_viagem           VARCHAR(20) NOT NULL
+                        REFERENCES silver_viagem (id_viagem),
+    num_proposta        VARCHAR(20),
+    nome_orgao_pagador  VARCHAR(255),
+    nome_ug_pagadora    VARCHAR(255),
+    tipo_pagamento      VARCHAR(50) NOT NULL,                  -- extra 1
+    valor               DECIMAL(10,2),
+    CONSTRAINT ck_pagamento_valor CHECK (valor >= 0)           -- extra 2
+);
+
