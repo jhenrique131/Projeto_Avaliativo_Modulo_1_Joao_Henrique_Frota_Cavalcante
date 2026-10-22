@@ -28,8 +28,29 @@ def get_engine():
         port=os.getenv("DB_PORT"),
         database=os.getenv("DB_NAME"),
     )
-    
+    return create_engine(URL)
 
+def executar(comando, params=None, conn=None):
+    """
+    Executa um comando SQL no PostgreSQL.
+    Sem `conn`, abre uma conexao propria e faz commit.
+    Com `conn`, apenas executa (o commit fica a cargo de quem chamou)..
+    """
+    propria = conn is None
+    conn - conn or conectar()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(comando, params)
+        if propria:
+            conn.commit()
+        return linhas
+    except Exception:
+        if propria:
+            conn.rollback()
+        raise
+    finally:
+        if propria:
+            conn.close()
     
 
 
