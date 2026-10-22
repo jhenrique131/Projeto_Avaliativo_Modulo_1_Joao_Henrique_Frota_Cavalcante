@@ -120,3 +120,21 @@ CREATE TABLE silver_viagem (
     CONSTRAINT ck_viagem_valor_diarias CHECK (valor_diarias >= 0)  -- extra 2
 );
 
+CREATE TABLE silver_passagem (
+    id_passagem         INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_viagem           VARCHAR(20) NOT NULL
+                        REFERENCES silver_viagem (id_viagem),
+    meio_transporte     VARCHAR(50),
+    pais_origem_ida     VARCHAR(60),
+    uf_origem_ida       VARCHAR(40),
+    cidade_origem_ida   VARCHAR(80),
+    pais_destino_ida    VARCHAR(60),
+    uf_destino_ida      VARCHAR(40),
+    cidade_destino_ida  VARCHAR(80),
+    valor_passagem      DECIMAL(10,2),
+    taxa_servico        DECIMAL(10,2),
+    data_emissao        DATE,
+    CONSTRAINT ck_passagem_valor CHECK (valor_passagem >= 0),  -- extra 1
+    CONSTRAINT ck_passagem_taxa  CHECK (taxa_servico >= 0)     -- extra 2
+);
+
