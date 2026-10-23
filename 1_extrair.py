@@ -64,6 +64,31 @@ def carregar_tabela(conn, tabela, csv_path):
     conn.commit()
     log.info("%s: %d linhas carregadas", tabela, total)
     return total
-        
+
+def main():
+    try:
+        csvs = extrair_csvs(baixar_zip())
+    except Exception:
+        log.exception("Falha ao baixar ou extrair os CSVs")
+        return 1
+    falhas = 0
+    conn = conectar()
+    try:
+        for tabela, csv_path in csvs.items():
+            try:
+                carregar_tabela(conn, tabela, csv_path)
+            except Exception:
+                conn.rollback()
+                falhas += 1
+                log.exception("Falha ao carregar tabela %s", tabela)
+    finally:
+        conn.close()
+    return 1 if falhas else 0
+
+if __name__ == "__main__":
+    sys.exit(main())
+                
+                
+                      
     
     
