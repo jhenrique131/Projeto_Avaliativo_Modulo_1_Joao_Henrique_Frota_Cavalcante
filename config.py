@@ -25,10 +25,10 @@ DB_CONFIG = {
 
 #tabela Raw - Arquivo CSV original, sem tratamento
 ARQUIVOS_RAW = {
-    "raw_viagens": "viagens_2025.csv",
-    "raw_pagamentos": "pagamentos_2025.csv",
-    "raw_passagem": "passagem_2025.csv",
-    "raw_trecho": "trecho_2025.csv",
+    "raw_viagens": "2025_Viagem.csv",
+    "raw_pagamentos": "2025_Pagamento.csv",
+    "raw_passagem": "2025_Passagem.csv",
+    "raw_trecho": "2025_Trecho.csv",
 }
 
 #Colunas da tabela Raw, na mesma ordem das colunas dos csvs
