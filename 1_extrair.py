@@ -29,3 +29,16 @@ def baixar_zip():
         raise RuntimeError("Falha ao baixar o arquivo .zip do Google Drive.")
     return Path(caminho)
        
+def extrair_csvs(zip_path):
+    """Extrai os CSVs esperados e devolve {tabela_raw: caminho_csv}."""
+    caminhos = {}
+    with zipfile.ZipFile(zip_path) as zf:
+        por_nome = {Path(n).name.lower(): n for n in zf.namelist()}
+        for tabela, arquivo in config.ARQUIVOS_RAW.items():
+            interno = por_nome.get(arquivo.lower())
+            if interno is None:
+                raise FileNotFoundError(f"{arquivo} nao esta no .zip")
+            destino = config.DATA_DIR / arquivo
+            destino.write_bytes(zf.read(interno))
+            caminhos[tabela] = destino
+    return caminhos       
