@@ -22,13 +22,14 @@ def get_engine():
     from sqlalchemy.engine import URL
 
     cfg = config.DB_CONFIG
+    print(f"Configurações do banco: {cfg}")
     url = URL.create(
         "postgresql+psycopg2",
         username=cfg["user"],
         password=cfg["password"],
         host=cfg["host"],
         port=int(cfg["port"]),
-        database=cfg["dbname"],
+        database=cfg["database"],
     )
     return create_engine(url)
 
@@ -39,7 +40,7 @@ def executar(comando, params=None, conn=None):
     Com `conn`, apenas executa (o commit fica a cargo de quem chamou)..
     """
     propria = conn is None
-    conn - conn or conectar()
+    conn = conectar()
     try:
         with conn.cursor() as cur:
             cur.execute(comando, params)
@@ -94,4 +95,4 @@ def ler_em_bloco(conn, consulta, tamanho=50_000):
             yield bloco
         
    
-
+#get_engine()
