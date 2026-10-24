@@ -2,6 +2,22 @@
 
 Baixa o .zip do Google Drive, le os 4 CSVs em blocos e carrega nas tabelas
 Raw sem alterar o conteudo. Idempotente (TRUNCATE) e resiliente (try/except).
+
+hunk_size = 50000  # 50 mil linhas por vez
+
+        total_linhas = 0
+        for chunk in pd.read_csv(
+            arquivo_csv,
+            sep=';',
+            encoding='latin-1',
+            dtype=str,
+            keep_default_na=False,
+            chunksize=chunk_size
+        ):
+            # Passo 3: Inserir cada chunk
+            if inserir_em_lote(conexao, tabela, chunk):
+                total_linhas += len(chunk)
+                print(f"    → {total_linhas} linhas inseridas...")
 """
 
 import logging
@@ -35,7 +51,9 @@ def extrair_csvs(zip_path):
     with zipfile.ZipFile(zip_path) as zf:
         por_nome = {Path(n).name.lower(): n for n in zf.namelist()}
         for tabela, arquivo in config.ARQUIVOS_RAW.items():
+            print(f"Extraindo {arquivo} para a tabela {tabela}")
             interno = por_nome.get(arquivo.lower())
+            print(f"Arquivo interno no zip: {interno}")
             if interno is None:
                 raise FileNotFoundError(f"{arquivo} nao esta no .zip")
             destino = config.DATA_DIR / arquivo
@@ -51,17 +69,21 @@ def carregar_tabela(conn, tabela, csv_path):
     if total_cols < len(colunas):
         raise ValueError(f"{csv_path.name}:{total_cols} colunas,"
                          f"esperado {len(colunas)}")
-    executar(f"TRUNCATE TABLE {tabela}", conn=conn)
+    conexao = conn
+    executar(f"TRUNCATE TABLE {tabela}", conn=conexao)
     blocos = pd.read_csv(
         csv_path, sep=config.CSV_SEP, encoding=config.CSV_ENCODING,
         dtype=str, keep_default_na=False, header=0, names=colunas,
         usecols=range(len(colunas)), chunksize=config.CHUNK_SIZE,
     )
+    print(f"Blocos: {blocos.read()}")
     total = 0
+    testes = pd.DataFrame(blocos.read(10))
+    print(f"Testes: {testes}")
     for bloco in blocos:
         linhas = list(bloco.itertuples(index=False, name=None))
-        total += inserir_em_lote(conn, tabela, colunas, linhas)
-    conn.commit()
+        #total += inserir_em_lote(conn, tabela, colunas, linhas)
+    #conn.commit()
     log.info("%s: %d linhas carregadas", tabela, total)
     return total
 
@@ -73,14 +95,16 @@ def main():
         return 1
     falhas = 0
     conn = conectar()
+    #print(f"Conexão com o banco estabelecida: {conn}")
+    #print(pd.read_sql("SELECT * FROM raw_trecho", conn))
     try:
         for tabela, csv_path in csvs.items():
-            try:
-                carregar_tabela(conn, tabela, csv_path)
-            except Exception:
-                conn.rollback()
-                falhas += 1
-                log.exception("Falha ao carregar tabela %s", tabela)
+            #try:
+            carregar_tabela(conn, tabela, csv_path)
+    except Exception:
+        conn.rollback()
+        falhas += 1
+        log.exception("Falha ao carregar tabela %s", tabela)
     finally:
         conn.close()
     return 1 if falhas else 0
