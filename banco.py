@@ -40,7 +40,7 @@ def executar(comando, params=None, conn=None):
     Com `conn`, apenas executa (o commit fica a cargo de quem chamou)..
     """
     propria = conn is None
-    conn = conectar()
+    conn = conn or conectar()
     try:
         with conn.cursor() as cur:
             cur.execute(comando, params)
