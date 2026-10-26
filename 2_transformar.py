@@ -60,6 +60,13 @@ def texto_para_data(valor):
     except ValueError:
         return None
 
+def texto_para_inteiro(valor):
+    """'3' -> 3. Invalido ou vazio -> None."""
+    try:
+        return int(valor.strip())
+    except(AttributeError, ValueError):
+        return None
+
 
 
     
