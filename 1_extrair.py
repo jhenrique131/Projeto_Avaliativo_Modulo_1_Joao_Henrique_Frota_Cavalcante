@@ -2,22 +2,6 @@
 
 Baixa o .zip do Google Drive, le os 4 CSVs em blocos e carrega nas tabelas
 Raw sem alterar o conteudo. Idempotente (TRUNCATE) e resiliente (try/except).
-
-hunk_size = 50000  # 50 mil linhas por vez
-
-        total_linhas = 0
-        for chunk in pd.read_csv(
-            arquivo_csv,
-            sep=';',
-            encoding='latin-1',
-            dtype=str,
-            keep_default_na=False,
-            chunksize=chunk_size
-        ):
-            # Passo 3: Inserir cada chunk
-            if inserir_em_lote(conexao, tabela, chunk):
-                total_linhas += len(chunk)
-                print(f"    → {total_linhas} linhas inseridas...")
 """
 
 import logging
@@ -70,7 +54,11 @@ def carregar_tabela(conn, tabela, csv_path):
         raise ValueError(f"{csv_path.name}:{total_cols} colunas,"
                          f"esperado {len(colunas)}")
     conexao = conn
+
+    #Executa um DROP TABLE para a tabela antes de carregar os dados
+    log.info(f"Truncando tabela {tabela} antes de carregar os dados")
     executar(f"TRUNCATE TABLE {tabela}", conn=conexao)
+
     blocos = pd.read_csv(
         csv_path, sep=config.CSV_SEP, encoding=config.CSV_ENCODING,
         dtype=str, keep_default_na=False, header=0, names=colunas,
@@ -95,16 +83,14 @@ def main():
         return 1
     falhas = 0
     conn = conectar()
-    #print(f"Conexão com o banco estabelecida: {conn}")
-    #print(pd.read_sql("SELECT * FROM raw_trecho", conn))
     try:
         for tabela, csv_path in csvs.items():
-            #try:
-            carregar_tabela(conn, tabela, csv_path)
-    except Exception:
-        conn.rollback()
-        falhas += 1
-        log.exception("Falha ao carregar tabela %s", tabela)
+            try:
+                carregar_tabela(conn, tabela, csv_path)
+            except Exception:
+                conn.rollback()
+                falhas += 1
+                log.exception("Falha ao carregar tabela %s", tabela)
     finally:
         conn.close()
     return 1 if falhas else 0
@@ -112,7 +98,10 @@ def main():
 if __name__ == "__main__":
     sys.exit(main())
                 
-                
+
+   
+      
+           
                       
     
     
