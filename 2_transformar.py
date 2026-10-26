@@ -112,7 +112,20 @@ def linha_viagem(r, _ids):
         calcular_valor_total(diarias, passagens, outros, devolucao),
         calcular_duracao(inicio, fim),
     )
-    
+def linha_passagem(r, ids):
+    (id_viagem, meio, p_o, uf_o, c_o, p_d, uf_d, c_d, valor, taxa, emissao) = r
+    id_viagem = limpar_texto(id_viagem, 20)
+    if id_viagem not in ids:
+        return None
+    valor, taxa = texto_para_decimal(valor), texto_para_decimal(taxa)
+    if negativo(valor, taxa):
+        return None
+    return (
+        id_viagem, limpar_texto(meio, 50), limpar_texto(p_o, 60),
+        limpar_texto(uf_o, 40), limpar_texto(c_o, 80), limpar_texto(p_d, 60),
+        limpar_texto(uf_d, 40), limpar_texto(c_d, 80), valor, taxa,
+        texto_para_data(emissao),
+    )
 
     
     
