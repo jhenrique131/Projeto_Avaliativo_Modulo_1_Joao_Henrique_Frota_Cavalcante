@@ -83,6 +83,35 @@ def negativo(*valores):
     """Retorna True se algum dos valores for negativo."""
     return any(v is not None and v < 0 for v in valores)
 
+# ---------------------------------------------------------------------
+# Transformacao de cada linha (devolve tupla Silver ou None se rejeitada)
+# ---------------------------------------------------------------------
+def linha_viagem(r, _ids):
+    (id_viagem, num_proposta, situacao, urgente, cod_org, nome_org, viajante,
+     cargo, dt_ini, dt_fim, destinos, motivo, v_diarias, v_passagens,
+     v_devolucao, v_outros) = r
+    id_viagem = limpar_texto(id_viagem, 20)
+    if not id_viagem:
+        return None
+    inicio, fim = texto_para_data(dt_ini), texto_para_data(dt_fim)
+    if inicio and fim and fim < inicio:
+        return None
+    diarias = texto_para_decimal(v_diarias)
+    passagens = texto_para_decimal(v_passagens)
+    devolucao = texto_para_decimal(v_devolucao)
+    outros = texto_para_decimal(v_outros)
+    if negativo(diarias):
+        return None
+    return (
+        id_viagem, limpar_texto(num_proposta, 20), limpar_texto(situacao, 50),
+        limpar_texto(urgente, 5), limpar_texto(cod_org, 20),
+        limpar_texto(nome_org, 255, NAO_INFORMADO),
+        limpar_texto(viajante, 255), limpar_texto(cargo, 255), inicio, fim,
+        limpar_texto(destinos, 4000), limpar_texto(motivo, 4000),
+        diarias, passagens, devolucao, outros,
+        calcular_valor_total(diarias, passagens, outros, devolucao),
+        calcular_duracao(inicio, fim),
+    )
     
 
     
