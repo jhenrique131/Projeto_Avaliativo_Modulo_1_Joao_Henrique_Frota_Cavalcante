@@ -67,7 +67,23 @@ def texto_para_inteiro(valor):
     except(AttributeError, ValueError):
         return None
 
+def calcular_valor_total(diarias, passagens, outros, devolucao):
+    """Calcula valor_total = diarias + passagens + outros - devolucao."""
+    zero = Decimal("0.00")
+    return ((diarias or zero) + (passagens or zero) + (outros or zero) 
+            - (devolucao or zero)).quantize(Decimal("0.01"))
 
+def calcular_duracao(inicio, fim):
+    """Calcula duracao_dias = (data_fim - data_inicio) + 1. Retorna None se inicio ou fim for None."""
+    if inicio is None or fim is None:
+        return None
+    return (fim - inicio).days + 1
+
+def negativo(*valores):
+    """Retorna True se algum dos valores for negativo."""
+    return any(v is not None and v < 0 for v in valores)
+
+    
 
     
     
