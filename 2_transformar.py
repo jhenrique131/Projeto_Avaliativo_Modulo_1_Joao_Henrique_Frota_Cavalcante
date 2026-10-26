@@ -126,6 +126,19 @@ def linha_passagem(r, ids):
         limpar_texto(uf_d, 40), limpar_texto(c_d, 80), valor, taxa,
         texto_para_data(emissao),
     )
+def linha_pagamento(r, ids):
+    id_viagem, proposta, orgao, ug, tipo, valor = r
+    id_viagem = limpar_texto(id_viagem, 20)
+    if id_viagem not in ids:
+        return None
+    valor = texto_para_decimal(valor)
+    if negativo(valor):
+        return None
+    return (
+        id_viagem, limpar_texto(proposta, 20), limpar_texto(orgao, 255),
+        limpar_texto(ug, 255), limpar_texto(tipo, 50, NAO_INFORMADO), valor,
+    )
+
 
     
     
