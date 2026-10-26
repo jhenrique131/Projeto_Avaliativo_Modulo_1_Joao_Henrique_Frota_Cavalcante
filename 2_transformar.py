@@ -25,6 +25,36 @@ NAO_INFORMADO = "NÃO INFORMADO"
 # ---------------------------------------------------------------------
 # Funcoes de conversao
 # ---------------------------------------------------------------------
+def limpar_texto(valor, tamanho=None, padrao=None):
+    """Remove espacos; vazio vira `padrao` (None); corta no tamanho."""
+    if valor is None:
+        return padrao
+    texto = valor.strip()
+    if not texto:
+        return padrao
+    return texto[:tamanho] if tamanho else texto
+
+def texto_para_decimal(valor, limite-LIMITE_DECIMAL):
+    """'1272,97' -> Decimal('1272.97'). Invalido ou vazio -> None."""
+    if valor is None:
+        return None
+    texto = valor.strip().replace("R$", "").replace(" ", "")
+    if not texto:
+        return None
+    if "," in texto:
+        texto = texto.replace(".", "").replace(",", ".")
+    try:
+        numero = Decimal(texto)
+    except InvalidOperation:
+        return None
+    if not numero.is_finite() or abs(numero) > limite:
+        return None
+    return numero.quantize(Decimal("0.01"))  # Arredonda para 2 casas decimais
+
+
+    
+    
+    
 
 
 
