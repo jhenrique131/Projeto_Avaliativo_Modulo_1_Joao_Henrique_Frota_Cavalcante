@@ -76,14 +76,14 @@ def carregar_tabela(conn, tabela, csv_path):
         dtype=str, keep_default_na=False, header=0, names=colunas,
         usecols=range(len(colunas)), chunksize=config.CHUNK_SIZE,
     )
-    print(f"Blocos: {blocos.read()}")
+    #print(f"Blocos: {blocos.read()}")
     total = 0
-    testes = pd.DataFrame(blocos.read(10))
-    print(f"Testes: {testes}")
+    #testes = pd.DataFrame(blocos.read(10))
+    #print(f"Testes: {testes}")
     for bloco in blocos:
         linhas = list(bloco.itertuples(index=False, name=None))
-        #total += inserir_em_lote(conn, tabela, colunas, linhas)
-    #conn.commit()
+        total += inserir_em_lote(conn, tabela, colunas, linhas)
+    conn.commit()
     log.info("%s: %d linhas carregadas", tabela, total)
     return total
 
