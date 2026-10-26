@@ -51,6 +51,16 @@ def texto_para_decimal(valor, limite-LIMITE_DECIMAL):
         return None
     return numero.quantize(Decimal("0.01"))  # Arredonda para 2 casas decimais
 
+def texto_para_data(valor):
+    """'31/01/2025' -> date(2025, 1, 31). Invalido ou vazio -> None."""
+    if valor is None or not valor.strip():
+        return None
+    try:
+        return datetime.strptime(valor.strip(), "%d/%m/%Y").date()
+    except ValueError:
+        return None
+
+
 
     
     
