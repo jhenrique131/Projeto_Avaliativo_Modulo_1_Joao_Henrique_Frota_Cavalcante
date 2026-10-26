@@ -22,3 +22,13 @@ log = logging.getLogger("transformar")
 LIMITE_DECIMAL = Decimal("99999999.99")   
 
 NAO_INFORMADO = "NÃO INFORMADO"
+# ---------------------------------------------------------------------
+# Funcoes de conversao
+# ---------------------------------------------------------------------
+
+
+
+
+
+
+
