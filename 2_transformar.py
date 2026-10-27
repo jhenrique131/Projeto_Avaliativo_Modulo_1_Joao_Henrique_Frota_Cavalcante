@@ -155,8 +155,68 @@ def linha_trecho(r, ids):
         limpar_texto(d_cid, 80), limpar_texto(meio, 50), diarias,
     )
     
-    
-    
+# ---------------------------------------------------------------------
+# Configuracao de cada tabela: (raw, silver, cols raw, cols silver, funcao,
+# on_conflict). A ordem respeita a integridade referencial.
+# ---------------------------------------------------------------------
+ETAPAS = [
+    ("raw_viagem", "silver_viagem",
+     ["id_viagem", "num_proposta", "situacao", "viagem_urgente",
+      "cod_orgao_superior", "nome_orgao_superior", "nome_viajante", "cargo",
+      "data_inicio", "data_fim", "destinos", "motivo", "valor_diarias",
+      "valor_passagens", "valor_devolucao", "valor_outros_gastos"],
+     ["id_viagem", "num_proposta", "situacao", "viagem_urgente",
+      "cod_orgao_superior", "nome_orgao_superior", "nome_viajante", "cargo",
+      "data_inicio", "data_fim", "destinos", "motivo", "valor_diarias",
+      "valor_passagens", "valor_devolucao", "valor_outros_gastos",
+      "valor_total", "duracao_dias"],
+     linha_viagem, "ON CONFLICT (id_viagem) DO NOTHING"),
+    ("raw_pagamento", "silver_pagamento",
+     ["id_viagem", "num_proposta", "nome_orgao_pagador", "nome_ug_pagadora",
+      "tipo_pagamento", "valor"],
+     ["id_viagem", "num_proposta", "nome_orgao_pagador", "nome_ug_pagadora",
+      "tipo_pagamento", "valor"],
+     linha_pagamento, ""),
+    ("raw_passagem", "silver_passagem",
+     ["id_viagem", "meio_transporte", "pais_origem_ida", "uf_origem_ida",
+      "cidade_origem_ida", "pais_destino_ida", "uf_destino_ida",
+      "cidade_destino_ida", "valor_passagem", "taxa_servico",
+      "data_emissao"],
+     ["id_viagem", "meio_transporte", "pais_origem_ida", "uf_origem_ida",
+      "cidade_origem_ida", "pais_destino_ida", "uf_destino_ida",
+      "cidade_destino_ida", "valor_passagem", "taxa_servico",
+      "data_emissao"],
+     linha_passagem, ""),
+    ("raw_trecho", "silver_trecho",
+     ["id_viagem", "sequencia_trecho", "origem_data", "origem_uf",
+      "origem_cidade", "destino_data", "destino_uf", "destino_cidade",
+      "meio_transporte", "numero_diarias"],
+     ["id_viagem", "sequencia_trecho", "origem_data", "origem_uf",
+      "origem_cidade", "destino_data", "destino_uf", "destino_cidade",
+      "meio_transporte", "numero_diarias"],
+     linha_trecho, "ON CONFLICT (id_viagem, sequencia_trecho) DO NOTHING"),
+]
+
+def processar(leitura, escrita, etapa, ids):
+    raw, silver, cols_raw, cols_silver, funcao, on_conflict = etapa
+    consulta = f"SELECT {', '.join(cols_raw)} FROM {raw}"
+    lidas = enviadas = 0
+    for bloco in ler_em_blocos(leitura, consulta, config.CHUNK_SIZE):
+        saida = []
+        for linha in bloco:
+            convertida = funcao(linha, ids)
+            if convertida is not None:
+                saida.append(convertida)
+        lidas += len(bloco)
+        enviadas += inserir_em_lote(escrita, silver, cols_silver, saida, on_conflict)
+    escrita.commit()
+    #Encerra a transação do cursor de leitura
+    leitura.rollback()     
+    log.info("%s: %d lidas, %d aceitas, %d rejeitadas/duplicadas",
+             silver, lidas, enviadas, lidas - enviadas)
+
+
+
 
 
 
