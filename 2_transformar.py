@@ -139,7 +139,21 @@ def linha_pagamento(r, ids):
         limpar_texto(ug, 255), limpar_texto(tipo, 50, NAO_INFORMADO), valor,
     )
 
-
+def linha_trecho(r, ids):
+    (id_viagem, seq, o_data, o_uf, o_cid, d_data, d_uf, d_cid, meio,
+     diarias) = r
+    id_viagem = limpar_texto(id_viagem, 20)
+    if id_viagem not in ids:
+        return None
+    diarias = texto_para_decimal(diarias)
+    if negativo(diarias):
+        return None
+    return (
+        id_viagem, texto_para_inteiro(seq), texto_para_data(o_data),
+        limpar_texto(o_uf, 40), limpar_texto(o_cid, 80),
+        texto_para_data(d_data), limpar_texto(d_uf, 40),
+        limpar_texto(d_cid, 80), limpar_texto(meio, 50), diarias,
+    )
     
     
     
