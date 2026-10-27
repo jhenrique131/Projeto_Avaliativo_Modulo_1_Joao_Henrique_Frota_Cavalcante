@@ -13,7 +13,7 @@ import sys
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 import config
-from banco import conectar, executar, ler_em_blocos, inserir_em_lote
+from banco import conectar, executar, ler_em_bloco, inserir_em_lote
 
 logging.basicConfig(level=logging.INFO,format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("transformar")
@@ -34,7 +34,7 @@ def limpar_texto(valor, tamanho=None, padrao=None):
         return padrao
     return texto[:tamanho] if tamanho else texto
 
-def texto_para_decimal(valor, limite-LIMITE_DECIMAL):
+def texto_para_decimal(valor, limite=LIMITE_DECIMAL):
     """'1272,97' -> Decimal('1272.97'). Invalido ou vazio -> None."""
     if valor is None:
         return None
@@ -201,7 +201,7 @@ def processar(leitura, escrita, etapa, ids):
     raw, silver, cols_raw, cols_silver, funcao, on_conflict = etapa
     consulta = f"SELECT {', '.join(cols_raw)} FROM {raw}"
     lidas = enviadas = 0
-    for bloco in ler_em_blocos(leitura, consulta, config.CHUNK_SIZE):
+    for bloco in ler_em_bloco(leitura, consulta, config.CHUNK_SIZE):
         saida = []
         for linha in bloco:
             convertida = funcao(linha, ids)
@@ -216,7 +216,7 @@ def processar(leitura, escrita, etapa, ids):
              silver, lidas, enviadas, lidas - enviadas)
 
 def main():
-    leitura, escrita = conectar(), conectar
+    leitura, escrita = conectar(), conectar()
     try:
         executar("TRUNCATE TABLE silver_trecho, silver_pagamento, "
                  "silver_passagem, silver_viagem RESTART IDENTITY",
@@ -225,18 +225,20 @@ def main():
         ids = None
         for etapa in ETAPAS:
             processar(leitura, escrita, etapa, ids)
-            if ids is None: #Após silver_viagem, libera as tabelas filhas
+            if ids is None:  # apos silver_viagem, libera as tabelas filhas
                 with escrita.cursor() as cur:
                     cur.execute("SELECT id_viagem FROM silver_viagem")
                     ids = {linha[0] for linha in cur.fetchall()}
         return 0
     except Exception:
         escrita.rollback()
-        log.exception("Falha na transformação Raw -> Silver")
+        log.exception("Falha na transformacao Raw -> Silver")
         return 1
     finally:
         leitura.close()
         escrita.close()
+
+
 if __name__ == "__main__":
     sys.exit(main())
 
