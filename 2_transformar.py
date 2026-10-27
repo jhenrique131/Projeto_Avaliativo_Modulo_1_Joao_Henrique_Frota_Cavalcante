@@ -215,6 +215,30 @@ def processar(leitura, escrita, etapa, ids):
     log.info("%s: %d lidas, %d aceitas, %d rejeitadas/duplicadas",
              silver, lidas, enviadas, lidas - enviadas)
 
+def main():
+    leitura, escrita = conectar(), conectar
+    try:
+        executar("TRUNCATE TABLE silver_trecho, silver_pagamento, "
+                 "silver_passagem, silver_viagem RESTART IDENTITY",
+                 conn=escrita)
+        escrita.commit()
+        ids = None
+        for etapa in ETAPAS:
+            processar(leitura, escrita, etapa, ids)
+            if ids is None: #Após silver_viagem, libera as tabelas filhas
+                with escrita.cursor() as cur:
+                    cur.execute("SELECT id_viagem FROM silver_viagem")
+                    ids = {linha[0] for linha in cur.fetchall()}
+        return 0
+    except Exception:
+        escrita.rollback()
+        log.exception("Falha na transformação Raw -> Silver")
+        return 1
+    finally:
+        leitura.close()
+        escrita.close()
+if __name__ == "__main__":
+    sys.exit(main())
 
 
 
