@@ -12,6 +12,27 @@ import gdown
 import pandas as pd
 import config
 from banco import conectar, executar, inserir_em_lote
+import sqlite3
+#Conect ao banco de dados ou cria caso não exista
+conn = sqlite3.connect('viagens_servico.db')
+cursor = conn.cursor()
+
+#Abrir o arquivo SQL para que seja lido
+with open('0_cria_banco.sql', 'r', encoding='utf-8') as f:
+    sql_script = f.read()
+
+#Executa o script 
+cursor.executescript(sql_script)
+
+#Salva as alterações
+conn.commit()
+conn.close()
+
+####################################################################################
+####################################################################################
+####################################################################################
+
+#Início do Script 1_extrair.py
 
 logging.basicConfig(level=logging.INFO, 
                     format="%(asctime)s [%(levelname)s] %(message)s")
