@@ -22,7 +22,7 @@ def get_engine():
     from sqlalchemy.engine import URL
 
     cfg = config.DB_CONFIG
-    print(f"Configurações do banco: {cfg}")
+    #print(f"Configurações do banco: {cfg}")
     url = URL.create(
         "postgresql+psycopg2",
         username=cfg["user"],
