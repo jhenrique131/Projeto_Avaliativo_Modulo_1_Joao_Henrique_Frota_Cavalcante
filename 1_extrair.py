@@ -12,21 +12,37 @@ import gdown
 import pandas as pd
 import config
 from banco import conectar, executar, inserir_em_lote
-import sqlite3
-#Conect ao banco de dados ou cria caso não exista
-conn = sqlite3.connect('viagens_servico.db')
-cursor = conn.cursor()
+import psycopg2
 
-#Abrir o arquivo SQL para que seja lido
-with open('0_cria_banco.sql', 'r', encoding='utf-8') as f:
-    sql_script = f.read()
+try:
+    #Abre a conexão utilizando as configurações do banco.py
+    conn = conectar()
+    conn.autocommit = True
+    cursor = conn.cursor()
 
-#Executa o script 
-cursor.executescript(sql_script)
+    # Abrir e ler o arquivo SQL original 
+    with open('0_criar_banco.sql', 'r', encoding='utf-8') as f:
+        sql_script = f.read()
 
-#Salva as alterações
-conn.commit()
-conn.close()
+ 
+    #Divide o script por ponto e vírgula para executar comando por comando
+    sql_comandos = [cmd.strip() for cmd in sql_script.split(";") if cmd.strip()]
+
+    for comando in sql_comandos:
+        # CREATE DATABASE para gerenciar a conexão nativamente.
+        if "CREATE DATABASE" in comando or "viagens_servico" in comando or comando.startswith("\\"):
+            continue
+        cursor.execute(comando)
+        
+    #Fecha os cursores de forma segura
+    cursor.close()
+    conn.close()
+    print("Estrutura de tabelas (RAW e SILVER) recriada com sucesso!")
+
+except Exception as e:
+    print(f"Erro ao inicializar o banco de dados: {e}")
+    print("Verifique se o banco 'viagens_servico' já foi criado no seu PostgreSQL.")
+
 
 ####################################################################################
 ####################################################################################
