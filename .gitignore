@@ -1,5 +1,7 @@
 # Credenciais
 .env
+.env.exemplo
+requirements.txt
 
 # Dados (nunca versionar)
 data/
@@ -11,6 +13,3 @@ __pycache__/
 *.pyc
 venv/
 .venv/
-
-# Jupyter
-.ipynb_checkpoints/
