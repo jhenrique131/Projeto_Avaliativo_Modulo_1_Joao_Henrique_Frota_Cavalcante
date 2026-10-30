@@ -1,7 +1,7 @@
 # Credenciais
 .env
 .env.exemplo
-requirements.txt
+
 
 # Dados (nunca versionar)
 data/
